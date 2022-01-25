@@ -6,6 +6,8 @@
 
 #include "usIntensityInteraction.h"
 
+using namespace std;
+
 #define TO_COMPLETE
 
 
@@ -35,16 +37,18 @@ vpMatrix cptImgLs::Ls( vpImage<double> &dIdx, vpImage<double> &dIdy, vpImage<dou
     // Question 4
     // compute the interaction matrix related to the visual features
     //
+    int l = 0;
     for(int i = Hmin; i < Hmax; i++) {
       for(int j = Wmin; j < Wmax; j++) {
-        int x = sx*(i-imgH/2);
-        int y = sy*(j-imgW/2);
-        Ls[i*ROIW+j][0] = dIdx[i][j];
-        Ls[i*ROIW+j][1] = dIdy[i][j];
-        Ls[i*ROIW+j][2] = dIdz[i][j];
-        Ls[i*ROIW+j][3] = y*dIdz[i][j];
-        Ls[i*ROIW+j][4] = -x*dIdz[i][j];
-        Ls[i*ROIW+j][5] = x*dIdy[i][j]-y*dIdx[i][j];
+        double x = sx*(j-imgW/2);
+        double y = sy*(i-imgH/2);
+        Ls[l][0] = dIdx[i][j];
+        Ls[l][1] = dIdy[i][j];
+        Ls[l][2] = dIdz[i][j];
+        Ls[l][3] = y*dIdz[i][j];
+        Ls[l][4] = -x*dIdz[i][j];
+        Ls[l][5] = x*dIdy[i][j]-y*dIdx[i][j];
+        l++;
       }
     }
     

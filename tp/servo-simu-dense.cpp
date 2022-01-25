@@ -313,6 +313,8 @@ int main()
     // Control loop
     //
     ///////////////////////////////////////////////////////////////////////
+    vpColVector trackingError;
+    trackingError.resize(nbPx);
     try  {
         while(1)
         {
@@ -335,7 +337,14 @@ int main()
             // Update the current visual features vector from the current image (Image)
             // using the coordinates of the ROI left-top corner (Hmin, Wmin) and right-bottom corner (Hmax, Wmax)
             //
-            // CurrentFeatures[...] = ...;
+            int cptCurrent = 0;
+            for(int i = Hmin; i < Hmax; i++) {
+                for(int j = Wmin; j < Wmax; j++) {
+                    CurrentFeatures[cptCurrent] = Image[i][j];
+                    cptCurrent++;
+                }
+            }
+                
 
 #endif
 
@@ -347,10 +356,10 @@ int main()
             // Question 6
             // Compute the control law that provides the velocity to apply to the probe
             //
-            //  vpColVector VisualFeatureError;
-            //
-            // VisualFeatureError = ...; // Compute the visual feature error
-            // probe_velocity = ...; // Compute the probe velocity
+            vpColVector VisualFeatureError;
+            VisualFeatureError = CurrentFeatures-DesiredFeatures; // Compute the visual feature error
+            float lambda = 0.4;
+            probe_velocity = -lambda*Ls.pseudoInverse()*VisualFeatureError; // Compute the probe velocity
 
 #endif
 
@@ -358,8 +367,9 @@ int main()
 #ifdef TO_COMPLETE
             // Question 12
             // Compute the integral term and add it to the control law to compensate the tracking error
-            // double opt_mu = 0.01;
-            // probe_velocity -= opt_mu * ...;
+            double opt_mu = 0.05;
+            trackingError += VisualFeatureError;
+            probe_velocity -= opt_mu  * Ls.pseudoInverse() * trackingError;
 #endif
 
 
@@ -370,7 +380,9 @@ int main()
             // Compute the current value of the normalized visual cost function.
             // To compute the Euclidean norm you can use the euclideanNorm() method of the vpColVector class of VisP
             //
-            // cost = ...;
+            
+            cost = VisualFeatureError.euclideanNorm()/nbPx;
+            
 
 #endif
 
@@ -392,12 +404,14 @@ int main()
             // Same than Question 1 but with sisusoidal amplitude of 0.02 (meter)
             // on the 3 translational components and amplitude of 20 (deg) on the 3 rotational components.
             //
-            // object_velocity[0] = ...; // translation (translational velocity has to be provided in meter/s)
-            // object_velocity[1] = ...; // translation (translational velocity has to be provided in meter/s)
-            // object_velocity[2] = ...; // translation (translational velocity has to be provided in meter/s)
-            // object_velocity[3] = ...; // rotation (angular velocity has to be provided in rad/s. Use vpMath::rad() for converting degree to rad)
-            // object_velocity[4] = ...; // rotation (angular velocity has to be provided in rad/s. Use vpMath::rad() for converting degree to rad)
-            // object_velocity[5] = ...; // rotation (angular velocity has to be provided in rad/s. Use vpMath::rad() for converting degree to rad)
+            
+            object_velocity[0] = 4*0.005*sin((2*PI/5)*time); // translation (translational velocity has to be provided in meter/s)
+            object_velocity[1] = 4*0.005*sin((2*PI/5)*time); // translation (translational velocity has to be provided in meter/s)
+            object_velocity[2] = 4*0.005*sin((2*PI/5)*time); // translation (translational velocity has to be provided in meter/s)
+            object_velocity[3] = 4*vpMath::rad(5)*sin((2*PI/5)*time); // rotation (angular velocity has to be provided in rad/s. Use vpMath::rad() for converting degree to rad)
+            object_velocity[4] = 4*vpMath::rad(5)*sin((2*PI/5)*time); // rotation (angular velocity has to be provided in rad/s. Use vpMath::rad() for converting degree to rad)
+            object_velocity[5] = 4*vpMath::rad(5)*sin((2*PI/5)*time);// rotation (angular velocity has to be provided in rad/s. Use vpMath::rad() for converting degree to rad)
+            
 #endif
 
             simulator->sendControlVelocity(probe_velocity, object_velocity, period);
