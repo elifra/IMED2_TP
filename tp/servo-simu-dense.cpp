@@ -295,10 +295,14 @@ int main()
     // a relative roration of 2 deg around y axis
     // a relative roration of 4 deg around z axis
     //
-    // world_poseProbe[...] = world_poseProbe[...] + ...; //deg has to be conveted in rad with vpMath::rad()
-
-    // simulator->setProbePosition(world_poseProbe); // Set the probe pose to the new location
-    // simulator->render(); // Render the simulator to take into account modification
+    world_poseProbe[0] = world_poseProbe[0] + 0.002; //deg has to be conveted in rad with vpMath::rad()
+    world_poseProbe[1] = world_poseProbe[1] + 0.002;
+    world_poseProbe[2] = world_poseProbe[2] + 0.002;
+    world_poseProbe[3] = world_poseProbe[3] + vpMath::rad(2);
+    world_poseProbe[4] = world_poseProbe[4] + vpMath::rad(2);
+    world_poseProbe[5] = world_poseProbe[5] + vpMath::rad(4);
+    simulator->setProbePosition(world_poseProbe); // Set the probe pose to the new location
+    simulator->render(); // Render the simulator to take into account modification
 #endif
 
     // For waiting a click on the image before lauching the visual servoing
@@ -394,6 +398,7 @@ int main()
             // on the 3 translational components and amplitude of 5 (deg) on the 3 rotational components.
             // All sisunoidal signals should have a period of 5 seconds. The current time is given by
             // the already defined variable (double)time
+            /*
             object_velocity[0] = 0.005*sin((2*PI/5)*time); // translation (translational velocity has to be provided in meter/s)
             object_velocity[1] = 0.005*sin((2*PI/5)*time); // translation (translational velocity has to be provided in meter/s)
             object_velocity[2] = 0.005*sin((2*PI/5)*time); // translation (translational velocity has to be provided in meter/s)
@@ -411,7 +416,7 @@ int main()
             object_velocity[3] = 4*vpMath::rad(5)*sin((2*PI/5)*time); // rotation (angular velocity has to be provided in rad/s. Use vpMath::rad() for converting degree to rad)
             object_velocity[4] = 4*vpMath::rad(5)*sin((2*PI/5)*time); // rotation (angular velocity has to be provided in rad/s. Use vpMath::rad() for converting degree to rad)
             object_velocity[5] = 4*vpMath::rad(5)*sin((2*PI/5)*time);// rotation (angular velocity has to be provided in rad/s. Use vpMath::rad() for converting degree to rad)
-            
+            */
 #endif
 
             simulator->sendControlVelocity(probe_velocity, object_velocity, period);
